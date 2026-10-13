@@ -103,6 +103,16 @@ th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--rule2)}
 th{font-size:12.5px;color:var(--ink2);background:rgba(220,207,184,.25);font-family:var(--f-mono)}
 td.num{font-family:var(--f-mono)}
 .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+/* tabs */
+.tabs{display:flex;gap:10px;margin:20px 0 0;position:sticky;top:57px;z-index:5;
+background:linear-gradient(var(--bg) 78%,transparent);padding:8px 0}
+.tab{font-family:var(--f-display);font-size:15px;font-weight:700;color:var(--ink2);
+background:var(--surface);border:1px solid var(--rule);border-radius:8px 8px 0 0;
+padding:10px 24px;cursor:pointer;min-height:44px;border-bottom:3px solid transparent}
+.tab.active{color:var(--ink);border-bottom:3px solid var(--red);background:var(--surface)}
+.tabpane{display:none}
+.tabpane.active{display:block;animation:fadein .25s}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
 /* hub */
 .dest-card{display:block;background:var(--surface);border:1px solid var(--rule);border-radius:4px;
 padding:18px;margin-bottom:18px;text-decoration:none;color:var(--ink);position:relative;box-shadow:0 1px 0 var(--rule)}
@@ -268,6 +278,12 @@ def dest_page(d):
 <div class="sub">{d.get('desc', '')}</div>
 </div>
 
+<div class="tabs" role="tablist">
+<button class="tab active" data-tab="prices" role="tab">今日比價</button>
+<button class="tab" data-tab="trend" role="tab">走勢分析</button>
+</div>
+
+<div class="tabpane active" id="tab-prices">
 <div class="sec"><div class="sec-h"><h2>今日焦點</h2><span class="en">FOCUS</span></div>
 <div class="ticket"><div class="tape" style="background:rgba(242,220,93,.7)"></div>
 <div class="t-in" style="font-size:14px">{focus_html}</div></div></div>
@@ -278,7 +294,9 @@ def dest_page(d):
 <div class="sec"><div class="sec-h"><h2>無行李＋官網加購</h2><span class="en">NO BAG + ADD-ON</span></div>
 {''.join(cards2)}</div>
 <div class="note">部分航空公司線上預購行李費官方未公開，真實總價無法完整計算，詳見各票根說明。</div>
+</div>
 
+<div class="tabpane" id="tab-trend">
 <div class="sec"><div class="sec-h"><h2>價格走勢</h2><span class="en">TREND</span></div>
 <div class="chart-card"><div class="chart-wrap"><canvas id="trend"></canvas></div></div>
 <div class="note">點擊圖例可篩選日期組合。每日含行李直飛最低價（NT$）。</div></div>
@@ -286,6 +304,7 @@ def dest_page(d):
 <div class="sec"><div class="sec-h"><h2>漲跌分析</h2><span class="en">ANALYSIS</span></div>
 <table><tr><th>組合</th><th>今日</th><th>歷史低點</th><th>期間走勢</th></tr>
 {''.join(arows)}</table></div>
+</div>
 
 <div class="foot">資料來源：Google Flights、Skyscanner 台灣（瀏覽器實際查詢）・價格為選定去回程後的實際總價・僅供參考，實際以訂票頁面為準・每日自動更新</div>
 </div>
@@ -293,7 +312,9 @@ def dest_page(d):
 const chartData = {chart_json};
 const airlines = {airlines_json};
 const dates = {dates_json};
-new Chart(document.getElementById('trend'), {{
+let trendChart = null;
+function initTrend() {{
+trendChart = new Chart(document.getElementById('trend'), {{
   type: 'line',
   data: chartData,
   options: {{
@@ -319,6 +340,19 @@ new Chart(document.getElementById('trend'), {{
         font: {{family: "'Courier Prime', monospace", size: 11}}}}}}
     }}
   }}
+}});
+}}
+document.querySelectorAll('.tab').forEach(function(btn) {{
+  btn.addEventListener('click', function() {{
+    document.querySelectorAll('.tab').forEach(function(b) {{ b.classList.remove('active'); }});
+    document.querySelectorAll('.tabpane').forEach(function(p) {{ p.classList.remove('active'); }});
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    if (btn.dataset.tab === 'trend') {{
+      if (!trendChart) initTrend(); else trendChart.resize();
+    }}
+    document.querySelector('.tabs').scrollIntoView({{behavior: 'smooth', block: 'start'}});
+  }});
 }});
 </script>
 </body>
