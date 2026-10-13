@@ -1,1 +1,28 @@
-{"background_color":"#F3ECDC","description":"Daily flight price tracking","display":"standalone","icons":[{"sizes":"192x192","src":"/flight-tracker/icons/icon-192.png","type":"image/png"},{"sizes":"512x512","src":"/flight-tracker/icons/icon-512.png","type":"image/png"},{"purpose":"maskable","sizes":"512x512","src":"/flight-tracker/icons/icon-512-maskable.png","type":"image/png"}],"name":"Flight Tracker","scope":"/flight-tracker/","short_name":"Flights","start_url":"/flight-tracker/","theme_color":"#B3301F"}
+{
+  "background_color": "#F3ECDC",
+  "description": "Daily flight price tracking",
+  "display": "standalone",
+  "icons": [
+    {
+      "sizes": "192x192",
+      "src": "/flight-tracker/icons/icon-192.png",
+      "type": "image/png"
+    },
+    {
+      "sizes": "512x512",
+      "src": "/flight-tracker/icons/icon-512.png",
+      "type": "image/png"
+    },
+    {
+      "purpose": "maskable",
+      "sizes": "512x512",
+      "src": "/flight-tracker/icons/icon-512-maskable.png",
+      "type": "image/png"
+    }
+  ],
+  "name": "Flight Tracker",
+  "scope": "/flight-tracker/",
+  "short_name": "Flight Tracker",
+  "start_url": "/flight-tracker/",
+  "theme_color": "#B3301F"
+}
