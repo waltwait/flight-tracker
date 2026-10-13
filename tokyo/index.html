@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>東京機票追蹤｜TPE ⇄ NRT</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Noto+Serif+TC:wght@600;900&family=LXGW+WenKai+TC&family=Courier+Prime:wght@400;700&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#F3ECDC;--surface:#FBF7EC;--ink:#3B2F25;--ink2:#66564A;--ink3:#8F7E6B;
+--rule:#DCCFB8;--rule2:#E9E0CD;--red:#B3301F;--blue:#2B4A86;--now:#F2DC5D;
+--kraft:#B98F63;
+--f-display:'Young Serif','Noto Serif TC',serif;
+--f-body:'LXGW WenKai TC','Kaiti TC','PingFang TC','Microsoft JhengHei',serif;
+--f-mono:'Courier Prime',monospace;
+}
+body{font-family:var(--f-body);color:var(--ink);line-height:1.65;font-size:15.5px;
+background-color:var(--bg);
+background-image:radial-gradient(#e2d5b8 1.1px,transparent 1.1px);
+background-size:22px 22px;padding:0 0 48px;-webkit-text-size-adjust:100%}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+@media(min-width:640px){.wrap{padding:0 28px}}
+/* nav */
+.nav{position:sticky;top:0;z-index:10;background:rgba(243,236,220,.88);
+backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.nav .wrap{display:flex;align-items:center;gap:10px;padding-top:10px;padding-bottom:10px}
+.nav a.brand{font-family:var(--f-display);font-weight:900;color:var(--ink);text-decoration:none;font-size:17px}
+.nav a.brand .stamp-sm{display:inline-block;color:var(--red);border:2px solid var(--red);
+border-radius:4px;font-size:12px;padding:0 6px;margin-right:8px;transform:rotate(-4deg);font-family:var(--f-display)}
+.nav .crumb{color:var(--ink3);font-size:13px}
+/* hero */
+.hero{padding:34px 0 10px;text-align:center}
+.stamp{display:inline-block;color:var(--red);border:4px double var(--red);border-radius:8px;
+font-family:var(--f-display);font-weight:900;font-size:clamp(48px,14vw,84px);
+padding:2px 18px;transform:rotate(-4deg);letter-spacing:4px;opacity:.92}
+.hero h1{font-family:var(--f-display);font-weight:900;font-size:clamp(26px,6vw,36px);margin:14px 0 6px}
+.hero .sub{color:var(--ink2);font-size:14px}
+.hl{background:linear-gradient(100deg,transparent 2%,var(--now) 4%,var(--now) 96%,transparent 98%);
+padding:0 4px;font-weight:700}
+/* section */
+.sec{margin-top:30px}
+.sec-h{display:flex;align-items:baseline;gap:10px;border-bottom:1.5px dashed var(--rule);padding-bottom:8px;margin-bottom:14px}
+.sec-h h2{font-family:var(--f-display);font-size:22px;font-weight:900}
+.sec-h .en{font-family:var(--f-mono);font-size:12px;color:var(--ink3)}
+/* ticket card */
+.ticket{position:relative;background:var(--surface);border:1px solid var(--rule);
+border-radius:4px;margin-bottom:18px;box-shadow:0 1px 0 var(--rule)}
+.tape{position:absolute;top:-11px;left:28px;width:92px;height:24px;opacity:.85;transform:rotate(-3deg);
+clip-path:polygon(2% 8%,7% 0,14% 10%,21% 2%,30% 9%,38% 1%,47% 10%,55% 3%,63% 9%,71% 2%,80% 10%,88% 3%,95% 9%,100% 4%,98% 90%,93% 100%,85% 92%,76% 99%,67% 93%,58% 100%,49% 94%,40% 99%,31% 93%,22% 100%,13% 94%,6% 99%,0 92%)}
+.ticket:nth-child(even) .tape{left:auto;right:28px;transform:rotate(3deg)}
+.t-in{padding:16px 16px 12px}
+.t-route{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.t-combo{font-family:var(--f-display);font-weight:900;font-size:17px}
+.t-id{font-family:var(--f-mono);font-size:12px;color:var(--ink3)}
+.t-price{font-family:var(--f-mono);font-weight:700;font-size:30px;margin:6px 0 2px}
+.t-delta{font-size:13px;margin-bottom:8px}
+.down{color:#2e7d46}.up{color:var(--red)}
+.t-meta{font-size:13.5px;color:var(--ink2)}
+.t-meta div{margin:2px 0}
+.t-meta .k{display:inline-block;min-width:70px;color:var(--ink3);font-size:12.5px}
+.t-perf{border-top:2px dashed var(--rule);margin:10px 0 0;position:relative}
+.t-foot{display:flex;justify-content:space-between;align-items:center;padding:10px 16px 12px}
+.src{font-family:var(--f-mono);font-size:12px;color:var(--ink3)}
+.btn{display:inline-block;background:#E0E2E8;color:var(--blue);font-weight:700;font-size:14px;
+border-radius:999px;padding:9px 26px;text-decoration:none;min-height:44px;line-height:26px}
+.btn:hover{background:#d3d7e0}
+.badge{display:inline-block;font-size:11.5px;border:1.5px solid var(--red);color:var(--red);
+border-radius:3px;padding:0 7px;margin-left:8px;transform:rotate(-3deg);font-weight:700;background:rgba(179,48,31,.06)}
+.badge.ok{border-color:#2e7d46;color:#2e7d46;transform:rotate(2deg);background:rgba(46,125,70,.06)}
+/* chart */
+.chart-card{background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:16px 12px 8px;position:relative}
+.chart-wrap{position:relative;height:290px}
+.note{font-size:13px;color:var(--ink3);margin-top:8px}
+/* table */
+table{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--surface);
+border:1px solid var(--rule);border-radius:4px;overflow:hidden}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--rule2)}
+th{font-size:12.5px;color:var(--ink2);background:rgba(220,207,184,.25);font-family:var(--f-mono)}
+td.num{font-family:var(--f-mono)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+/* hub */
+.dest-card{display:block;background:var(--surface);border:1px solid var(--rule);border-radius:4px;
+padding:18px;margin-bottom:18px;text-decoration:none;color:var(--ink);position:relative;box-shadow:0 1px 0 var(--rule)}
+.dest-card .go{position:absolute;right:16px;top:50%;transform:translateY(-50%);color:var(--blue);font-size:22px}
+.dest-card h3{font-family:var(--f-display);font-size:20px;font-weight:900}
+.dest-card .route{font-family:var(--f-mono);font-size:13px;color:var(--ink2);margin:4px 0}
+.dest-card .best{font-family:var(--f-mono);font-size:15px;margin-top:8px}
+.dest-card .best b{font-size:20px}
+.soon{border:1.5px dashed var(--rule);border-radius:4px;padding:18px;text-align:center;color:var(--ink3);font-size:14px}
+.foot{margin-top:36px;font-size:12.5px;color:var(--ink3);border-top:1px solid var(--rule);padding-top:12px}
+@media(prefers-color-scheme:dark){
+:root{--bg:#231D17;--surface:#2E2620;--ink:#EDE4D3;--ink2:#C4B49E;--ink3:#9A8874;
+--rule:#4A3E32;--rule2:#3A3129;--red:#EE8672;--blue:#A2B9EA;--now:#8a7a2e}
+body{background-image:radial-gradient(#3a3129 1.1px,transparent 1.1px)}
+.nav{background:rgba(35,29,23,.88)}
+.btn{background:#3A4358;color:#A2B9EA}.btn:hover{background:#444e68}
+}
+</style>
+</head>
+<body>
+<nav class="nav"><div class="wrap">
+<a class="brand" href="../"><span class="stamp-sm">TRACK</span>機票追蹤手帳</a>
+<span class="crumb">/ 東京</span>
+</div></nav>
+<div class="wrap">
+<div class="hero">
+<div class="stamp">TYO</div>
+<h1>東京機票追蹤</h1>
+<div class="sub">TPE ⇄ NRT・1 位成人・經濟艙・直飛・2026 年 10 月 13 日更新・匯率 USD/TWD 31.949</div>
+<div class="sub">2027/2/25–26 出發・3/2–3/3 回程</div>
+</div>
+
+<div class="sec"><div class="sec-h"><h2>今日焦點</h2><span class="en">FOCUS</span></div>
+<div class="ticket"><div class="tape" style="background:rgba(242,220,93,.7)"></div>
+<div class="t-in" style="font-size:14px">今日四組含行李最低價整體持平，無值得注意的降價。目前最低為 <span class='hl'>2/26 → 3/3 Peach Aviation NT$ 14,930</span>。</div></div></div>
+
+<div class="sec"><div class="sec-h"><h2>含行李直飛最低價</h2><span class="en">WITH BAGGAGE</span></div>
+
+<div class="ticket">
+  <div class="tape" style="background:rgba(224,178,74,.62)"></div>
+  <div class="t-in">
+    <div class="t-route"><span class="t-combo">2/25 → 3/2</span>
+    <span class="t-id">A</span></div>
+    <div class="t-price">NT$ 17,541</div>
+    <div class="t-delta up">▲ 205（+1.2%）vs 昨日</div>
+    <div class='t-meta'><div><span class='k'>航空</span>China Airlines</div><div><span class='k'>航班</span>CI108 02/25 14:25-18:30 TPE-NRT / CI109 03/02 19:30-22:45 NRT-TPE</div><div><span class='k'>托運行李</span>1 x 23kg 免費托運行李（票價明細已驗證）</div></div>
+  </div>
+  <div class="t-perf"></div>
+  <div class="t-foot"><span class="src">skyscanner-tw</span>
+  <a class="btn" href="https://www.skyscanner.com.tw/transport/flights/tpe/nrt/270225/270302/?adultsv2=1&cabinclass=economy&childrenv2=&ref=home&rtn=1&preferdirects=true&outboundaltsenabled=false&inboundaltsenabled=false&fare-attributes=checked-bag" target="_blank" rel="noopener">訂票 ✈</a></div>
+</div>
+<div class="ticket">
+  <div class="tape" style="background:rgba(219,154,149,.62)"></div>
+  <div class="t-in">
+    <div class="t-route"><span class="t-combo">2/25 → 3/3</span>
+    <span class="t-id">B</span></div>
+    <div class="t-price">NT$ 15,611</div>
+    <div class="t-delta up">▲ 1,267（+8.8%）vs 昨日</div>
+    <div class='t-meta'><div><span class='k'>航空</span>Peach Aviation</div><div><span class='k'>航班</span>MM628 02/25 17:15-21:30 TPE-NRT / MM621 03/03 12:55-16:15 NRT-TPE</div><div><span class='k'>托運行李</span>1 x 20kg 免費托運行李（票價明細已驗證，OTA bundle）</div></div>
+  </div>
+  <div class="t-perf"></div>
+  <div class="t-foot"><span class="src">skyscanner-tw</span>
+  <a class="btn" href="https://www.skyscanner.com.tw/transport/flights/tpe/nrt/270225/270303/?adultsv2=1&childrenv2=&cabinclass=economy&rtn=1&preferdirects=true&outboundaltsenabled=false&inboundaltsenabled=false&fare-attributes=checked-bag&fare-attributes=checked-bag" target="_blank" rel="noopener">訂票 ✈</a></div>
+</div>
+<div class="ticket">
+  <div class="tape" style="background:rgba(157,181,146,.62)"></div>
+  <div class="t-in">
+    <div class="t-route"><span class="t-combo">2/26 → 3/2</span>
+    <span class="t-id">C</span></div>
+    <div class="t-price">NT$ 17,012</div>
+    <div class="t-delta up">▲ 226（+1.3%）vs 昨日</div>
+    <div class='t-meta'><div><span class='k'>航空</span>Peach Aviation</div><div><span class='k'>航班</span>MM628 02/26 17:15-21:30 TPE-NRT / MM621 03/02 12:45-16:05 NRT-TPE</div><div><span class='k'>托運行李</span>1 x 20kg 免費托運行李（票價明細已驗證，OTA bundle）</div></div>
+  </div>
+  <div class="t-perf"></div>
+  <div class="t-foot"><span class="src">skyscanner-tw</span>
+  <a class="btn" href="https://www.skyscanner.com.tw/transport/flights/tpe/nrt/270226/270302/?adultsv2=1&childrenv2=&cabinclass=economy&rtn=1&preferdirects=true&outboundaltsenabled=false&inboundaltsenabled=false&fare-attributes=checked-bag&fare-attributes=checked-bag" target="_blank" rel="noopener">訂票 ✈</a></div>
+</div>
+<div class="ticket">
+  <div class="tape" style="background:rgba(162,185,234,.55)"></div>
+  <div class="t-in">
+    <div class="t-route"><span class="t-combo">2/26 → 3/3</span>
+    <span class="t-id">D</span></div>
+    <div class="t-price">NT$ 14,930</div>
+    <div class="t-delta up">▲ 149（+1.0%）vs 昨日</div>
+    <div class='t-meta'><div><span class='k'>航空</span>Peach Aviation</div><div><span class='k'>航班</span>MM628 02/26 17:15-21:30 TPE-NRT / MM621 03/03 12:55-16:15 NRT-TPE</div><div><span class='k'>托運行李</span>1 x 20kg 免費托運行李（票價明細已驗證，OTA bundle）</div></div>
+  </div>
+  <div class="t-perf"></div>
+  <div class="t-foot"><span class="src">skyscanner-tw</span>
+  <a class="btn" href="https://www.skyscanner.com.tw/transport/flights/tpe/nrt/270226/270303/?adultsv2=1&childrenv2=&cabinclass=economy&rtn=1&preferdirects=true&outboundaltsenabled=false&inboundaltsenabled=false&fare-attributes=checked-bag&fare-attributes=checked-bag" target="_blank" rel="noopener">訂票 ✈</a></div>
+</div></div>
+
+<div class="sec"><div class="sec-h"><h2>無行李＋官網加購</h2><span class="en">NO BAG + ADD-ON</span></div>
+
+<div class="ticket">
+  <div class="tape" style="background:rgba(157,181,146,.62)"></div>
+  <div class="t-in">
+    <div class="t-route"><span class="t-combo">2/25 → 3/2</span>
+    <span class="t-id">A</span></div>
+    <div class="t-price">NT$ 13,726</div>
+    <div class="t-delta ">－ 0（+0.0%）vs 昨日</div>
+    <div class='t-meta'><div><span class='k'>組合</span>Tigerair Taiwan + Jetstar Japan（分開票）</div><div><span class='k'>航班</span>IT202 02/25 15:35-19:35 TPE-NRT / GK13 03/02 08:30-11:50 NRT-TPE</div><div><span class='k'>加購行李</span>虎航 15kg 線上預購 NT$850（訂位時）／NT$1,000（訂位管理，費用表效期至 2026/10/24，tigerairtw.com）；捷星線上預購費仍僅訂位流程顯示，無法確認（官網僅公布機場價 GK 國際 15kg TWD 1,500）。</div><div><span class='k'>真實總價</span><strong>真實總價無法完整計算（至少 NT$13,726＋虎航段 NT$850＋捷星段另計）</strong></div></div>
+  </div>
+  <div class="t-perf"></div>
+  <div class="t-foot"><span class="src">google-flights</span>
+  <a class="btn" href="https://www.google.com/travel/flights/booking?tfs=CBwQAhpBEgoyMDI3LTAyLTI1Ih8KA1RQRRIKMjAyNy0wMi0yNRoDTlJUKgJJVDIDMjAyKABqBwgBEgNUUEVyBwgBEgNOUlQaQBIKMjAyNy0wMy0wMiIeCgNOUlQSCjIwMjctMDMtMDIaA1RQRSoCR0syAjEzKABqBwgBEgNOUlRyBwgBEgNUUEVAAUgBcAGCAQsI____________AZgBAQ&tfu=CmhDalJJVDNaU1lUTjVTM014WVc5QlFWTlhiVUZDUnkwdExTMHRMUzB0TFhCbWRXRXlNRUZCUVVGQlIzSk9VM0U0UnpkVlFXMUJFZ1JIU3pFekdnb0lubXNRQUJvRFZGZEVPQnh3MU04QxICCAAiAA&hl=en&gl=tw&curr=TWD" target="_blank" rel="noopener">訂票 ✈</a></div>
+</div>
+<div class="ticket">
+  <div class="tape" style="background:rgba(162,185,234,.55)"></div>
+  <div class="t-in">
+    <div class="t-route"><span class="t-combo">2/25 → 3/3</span>
+    <span class="t-id">B</span></div>
+    <div class="t-price">NT$ 11,511</div>
+    <div class="t-delta ">－ 0（+0.0%）vs 昨日</div>
+    <div class='t-meta'><div><span class='k'>組合</span>Tigerair Taiwan + Jetstar Japan（分開票）</div><div><span class='k'>航班</span>IT202 02/25 15:35-19:35 TPE-NRT / GK13 03/03 08:30-11:50 NRT-TPE</div><div><span class='k'>加購行李</span>虎航 15kg 線上預購 NT$850；捷星線上加購費無法確認。</div><div><span class='k'>真實總價</span><strong>真實總價無法完整計算（至少 NT$11,511＋虎航段 NT$850＋捷星段另計）</strong></div></div>
+  </div>
+  <div class="t-perf"></div>
+  <div class="t-foot"><span class="src">google-flights</span>
+  <a class="btn" href="https://www.google.com/travel/flights/booking?tfs=CBwQAhpBEgoyMDI3LTAyLTI1Ih8KA1RQRRIKMjAyNy0wMi0yNRoDTlJUKgJJVDIDMjAyKABqBwgBEgNUUEVyBwgBEgNOUlQaQBIKMjAyNy0wMy0wMyIeCgNOUlQSCjIwMjctMDMtMDMaA1RQRSoCR0syAjEzKABqBwgBEgNOUlRyBwgBEgNUUEVAAUgBcAGCAQsI____________AZgBAQ&tfu=CmhDalJJZUZnMVVEbEJhVk42T0d0QlFXSkROSGRDUnkwdExTMHRMUzB0TFhCbVpHa3hORUZCUVVGQlIzSk9WRVpCVFhjMk5XVkJFZ1JIU3pFekdnb0k5MWtRQUJvRFZGZEVPQnh3djVrQxICCAAiAA&hl=en&gl=tw&curr=TWD" target="_blank" rel="noopener">訂票 ✈</a></div>
+</div>
+<div class="ticket">
+  <div class="tape" style="background:rgba(224,178,74,.62)"></div>
+  <div class="t-in">
+    <div class="t-route"><span class="t-combo">2/26 → 3/2</span>
+    <span class="t-id">C</span></div>
+    <div class="t-price">NT$ 14,557</div>
+    <div class="t-delta ">－ 0（+0.0%）vs 昨日</div>
+    <div class='t-meta'><div><span class='k'>組合</span>Peach Aviation + Jetstar Japan（分開票）</div><div><span class='k'>航班</span>MM628 02/26 17:15-21:30 TPE-NRT / GK13 03/02 08:30-11:50 NRT-TPE</div><div><span class='k'>加購行李</span>樂桃 20kg 線上預購 JPY 3,600/段（flypeach.com，Zone B）；捷星線上加購費無法確認。</div><div><span class='k'>真實總價</span><strong>真實總價無法完整計算（樂桃段 JPY 3,600＋捷星段另計）</strong></div></div>
+  </div>
+  <div class="t-perf"></div>
+  <div class="t-foot"><span class="src">google-flights</span>
+  <a class="btn" href="https://www.google.com/travel/flights/booking?tfs=CBwQAhpBEgoyMDI3LTAyLTI2Ih8KA1RQRRIKMjAyNy0wMi0yNhoDTlJUKgJNTTIDNjI4KABqBwgBEgNUUEVyBwgBEgNOUlQaQBIKMjAyNy0wMy0wMiIeCgNOUlQSCjIwMjctMDMtMDIaA1RQRSoCR0syAjEzKABqBwgBEgNOUlRyBwgBEgNUUEVAAUgBcAGCAQsI____________AZgBAQ&tfu=CmhDalJJZGxocE1IZHpjRGgyUWpoQlFXaHJaR2RDUnkwdExTMHRMUzB0TFhCbVltdDNOVUZCUVVGQlIzSk9WRTVCUlRkQ1JXMUJFZ1JIU3pFekdnb0kzWEVRQUJvRFZGZEVPQnh3L3VNQxICCAAiAA&hl=en&gl=tw&curr=TWD" target="_blank" rel="noopener">訂票 ✈</a></div>
+</div>
+<div class="ticket">
+  <div class="tape" style="background:rgba(219,154,149,.62)"></div>
+  <div class="t-in">
+    <div class="t-route"><span class="t-combo">2/26 → 3/3</span>
+    <span class="t-id">D</span></div>
+    <div class="t-price">NT$ 12,342</div>
+    <div class="t-delta ">－ 0（+0.0%）vs 昨日</div>
+    <div class='t-meta'><div><span class='k'>組合</span>Peach Aviation + Jetstar Japan（分開票）</div><div><span class='k'>航班</span>MM628 02/26 17:15-21:30 TPE-NRT / GK13 03/03 08:30–11:50 NRT-TPE</div><div><span class='k'>加購行李</span>樂桃 20kg 線上預購 JPY 3,600/段；捷星線上加購費無法確認。</div><div><span class='k'>真實總價</span><strong>真實總價無法完整計算（樂桃段 JPY 3,600＋捷星段另計）</strong></div></div>
+  </div>
+  <div class="t-perf"></div>
+  <div class="t-foot"><span class="src">google-flights</span>
+  <a class="btn" href="https://www.google.com/travel/flights/booking?tfs=CBwQAhpBEgoyMDI3LTAyLTI2Ih8KA1RQRRIKMjAyNy0wMi0yNhoDTlJUKgJNTTIDNjI4KABqBwgBEgNUUEVyBwgBEgNOUlQaQhIKMjAyNy0wMy0wMyIgCgNOUlQSCjIwMjctMDMtMDMaA1RQRSoCSkwyBDg2NjMoAGoHCAESA05SVHIHCAESA1RQRUABSAFwAYIBCwj___________8BmAEB&tfu=CmxDalJJZVhBNGMzTm5SVTFIWWtWQlFXWTVUR2RDUnkwdExTMHRMUzB0TFhCbWEyOHlNa0ZCUVVGQlIzSk9WRlZOUVdGWVVWbEJFZ1JIU3pFekdnb0l0bUFRQUJvRFZGZEVPQnh3NkswQxICCAAiAA&hl=en&gl=tw&curr=TWD" target="_blank" rel="noopener">訂票 ✈</a></div>
+</div></div>
+<div class="note">部分航空公司線上預購行李費官方未公開，真實總價無法完整計算，詳見各票根說明。</div>
+
+<div class="sec"><div class="sec-h"><h2>價格走勢</h2><span class="en">TREND</span></div>
+<div class="chart-card"><div class="chart-wrap"><canvas id="trend"></canvas></div></div>
+<div class="note">點擊圖例可篩選日期組合。每日含行李直飛最低價（NT$）。</div></div>
+
+<div class="sec"><div class="sec-h"><h2>漲跌分析</h2><span class="en">ANALYSIS</span></div>
+<table><tr><th>組合</th><th>今日</th><th>歷史低點</th><th>期間走勢</th></tr>
+<tr><td><span class='dot' style='background:#2B4A86'></span>A</td><td class='num'>NT$ 17,541</td><td class='num'>NT$ 16,416（10/07）</td><td class='up'>上漲 +6.9%</td></tr><tr><td><span class='dot' style='background:#B3301F'></span>B</td><td class='num'>NT$ 15,611</td><td class='num'>NT$ 14,344（10/12）</td><td class='down'>下跌 -4.3%</td></tr><tr><td><span class='dot' style='background:#2e7d46'></span>C</td><td class='num'>NT$ 17,012</td><td class='num'>NT$ 16,154（10/09）</td><td class=''>持平 +0.4%</td></tr><tr><td><span class='dot' style='background:#B98F63'></span>D</td><td class='num'>NT$ 14,930</td><td class='num'>NT$ 14,664（10/09）</td><td class=''>持平 -0.1%</td></tr></table></div>
+
+<div class="foot">資料來源：Google Flights、Skyscanner 台灣（瀏覽器實際查詢）・價格為選定去回程後的實際總價・僅供參考，實際以訂票頁面為準・每日自動更新</div>
+</div>
+<script>
+const chartData = {"labels": ["10/07", "10/08", "10/09", "10/10", "10/11", "10/12", "10/13"], "datasets": [{"label": "A 2/25 → 3/2", "data": [16416, 16832, 16729, 16859, 17421, 17336, 17541], "borderColor": "#2B4A86", "backgroundColor": "#2B4A86", "tension": 0.25, "pointRadius": 3}, {"label": "B 2/25 → 3/3", "data": [16306, 15712, 18010, 20754, 15604, 14344, 15611], "borderColor": "#B3301F", "backgroundColor": "#B3301F", "tension": 0.25, "pointRadius": 3}, {"label": "C 2/26 → 3/2", "data": [16936, 16511, 16154, 16894, 16866, 16786, 17012], "borderColor": "#2e7d46", "backgroundColor": "#2e7d46", "tension": 0.25, "pointRadius": 3}, {"label": "D 2/26 → 3/3", "data": [14947, 14887, 14664, 14804, 16960, 14781, 14930], "borderColor": "#B98F63", "backgroundColor": "#B98F63", "tension": 0.25, "pointRadius": 3}]};
+const airlines = {"2026-10-07": {"A": "中華航空", "B": "台灣虎航", "C": "樂桃航空", "D": "樂桃航空"}, "2026-10-08": {"A": "中華航空", "B": "樂桃航空", "C": "樂桃航空", "D": "樂桃航空"}, "2026-10-09": {"A": "中華航空", "B": "星宇航空", "C": "樂桃航空", "D": "樂桃航空"}, "2026-10-10": {"A": "中華航空", "B": "日本航空", "C": "樂桃航空", "D": "樂桃航空"}, "2026-10-11": {"A": "中華航空", "B": "樂桃航空", "C": "樂桃航空", "D": "中華航空"}, "2026-10-12": {"A": "中華航空", "B": "捷星航空", "C": "樂桃航空", "D": "樂桃航空"}, "2026-10-13": {"A": "中華航空", "B": "樂桃航空", "C": "樂桃航空", "D": "樂桃航空"}};
+const dates = ["2026-10-07", "2026-10-08", "2026-10-09", "2026-10-10", "2026-10-11", "2026-10-12", "2026-10-13"];
+new Chart(document.getElementById('trend'), {
+  type: 'line',
+  data: chartData,
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    interaction: {mode: 'index', intersect: false},
+    plugins: {
+      legend: {position: 'bottom', labels: {font: {family: "'Courier Prime', monospace"}},
+        onClick: (e, li, leg) => {
+          const m = leg.chart.getDatasetMeta(li.datasetIndex);
+          m.hidden = !m.hidden; leg.chart.update();
+        }},
+      tooltip: {callbacks: {
+        label: (c) => ` ${c.dataset.label}: NT$ ${c.parsed.y.toLocaleString()}`,
+        afterBody: (items) => {
+          const al = airlines[dates[items[0].dataIndex]] || {};
+          return Object.entries(al).map(([k, v]) => ` ${k}: ${v}`);
+        }
+      }}
+    },
+    scales: {
+      x: {ticks: {font: {family: "'Courier Prime', monospace", size: 11}}},
+      y: {ticks: {callback: v => 'NT$' + (v/1000).toFixed(0) + 'k',
+        font: {family: "'Courier Prime', monospace", size: 11}}}
+    }
+  }
+});
+</script>
+</body>
+</html>
