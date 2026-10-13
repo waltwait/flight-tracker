@@ -264,7 +264,7 @@ def dest_page(d):
 <div class="hero">
 <div class="stamp">{d['code']}</div>
 <h1>{d['name']}機票追蹤</h1>
-<div class="sub">{d['route']}・1 位成人・經濟艙・直飛・{date_str}更新・匯率 USD/TWD {fx}</div>
+<div class="sub">{d['route']}・1 位成人・經濟艙・直飛・{date_str}更新</div>
 <div class="sub">{d.get('desc', '')}</div>
 </div>
 
@@ -369,7 +369,7 @@ position:relative;overflow:hidden;margin:26px 0 8px;box-shadow:0 2px 6px rgba(0,
 <div class="soon">更多航線即將加入…</div>
 </div>
 
-<div class="foot">每天自動更新・價格為瀏覽器實際查詢的選定航班總價（NT$）・僅供參考<br>📲 用手機 Chrome 開啟本站 → 右上角選單 →「安裝應用程式」，即可加到主畫面當 App 用</div>
+<div class="foot">每天自動更新・價格為瀏覽器實際查詢的選定航班總價（NT$）・僅供參考</div>
 </div>
 </body>
 </html>"""
