@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>東京機票追蹤｜TPE ⇄ NRT</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Noto+Serif+TC:wght@600;900&family=LXGW+WenKai+TC&family=Courier+Prime:wght@400;700&display=swap">
+<link rel="manifest" href="/flight-tracker/manifest.json">
+<meta name="theme-color" content="#B3301F">
+<link rel="apple-touch-icon" href="/flight-tracker/icons/apple-touch-icon.png">
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/flight-tracker/sw.js', {scope: '/flight-tracker/'});
+  });
+}
+</script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}

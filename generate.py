@@ -18,6 +18,17 @@ FONTS = ("https://fonts.googleapis.com/css2?family=Young+Serif"
          "&family=Noto+Serif+TC:wght@600;900&family=LXGW+WenKai+TC"
          "&family=Courier+Prime:wght@400;700&display=swap")
 
+PWA_HEAD = """<link rel="manifest" href="/flight-tracker/manifest.json">
+<meta name="theme-color" content="#B3301F">
+<link rel="apple-touch-icon" href="/flight-tracker/icons/apple-touch-icon.png">
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/flight-tracker/sw.js', {scope: '/flight-tracker/'});
+  });
+}
+</script>"""
+
 BASE_CSS = """
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -240,6 +251,7 @@ def dest_page(d):
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{d['name']}機票追蹤｜{d['route']}</title>
 <link rel="stylesheet" href="{FONTS}">
+{PWA_HEAD}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>{BASE_CSS}</style>
 </head>
@@ -336,6 +348,7 @@ def hub_page(dests):
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>機票追蹤手帳</title>
 <link rel="stylesheet" href="{FONTS}">
+{PWA_HEAD}
 <style>{BASE_CSS}
 .cover{{background:var(--kraft);border-radius:8px;padding:34px 24px;text-align:center;color:#2b2119;
 position:relative;overflow:hidden;margin:26px 0 8px;box-shadow:0 2px 6px rgba(0,0,0,.15)}}
@@ -356,7 +369,7 @@ position:relative;overflow:hidden;margin:26px 0 8px;box-shadow:0 2px 6px rgba(0,
 <div class="soon">更多航線即將加入…</div>
 </div>
 
-<div class="foot">每天自動更新・價格為瀏覽器實際查詢的選定航班總價（NT$）・僅供參考</div>
+<div class="foot">每天自動更新・價格為瀏覽器實際查詢的選定航班總價（NT$）・僅供參考<br>📲 用手機 Chrome 開啟本站 → 右上角選單 →「安裝應用程式」，即可加到主畫面當 App 用</div>
 </div>
 </body>
 </html>"""
