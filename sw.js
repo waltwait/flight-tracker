@@ -1,9 +1,11 @@
-/* flight-tracker service worker: offline cache for installability */
-const CACHE = 'flight-tracker-v1';
+/* flight-tracker service worker (generated 20261013) */
+const CACHE = 'flight-tracker-20261013';
 const ASSETS = [
   '/flight-tracker/',
   '/flight-tracker/tokyo/',
   '/flight-tracker/manifest.json',
+  '/flight-tracker/icons/icon-192.png',
+  '/flight-tracker/icons/icon-512.png',
 ];
 
 self.addEventListener('install', (e) => {
@@ -22,6 +24,18 @@ self.addEventListener('activate', (e) => {
 
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
+  // Page navigations: network-first so the installed app always opens fresh prices.
+  if (e.request.mode === 'navigate' || e.request.destination === 'document') {
+    e.respondWith(
+      fetch(e.request).then((res) => {
+        const copy = res.clone();
+        caches.open(CACHE).then((c) => c.put(e.request, copy));
+        return res;
+      }).catch(() => caches.match(e.request))
+    );
+    return;
+  }
+  // Static assets: cache-first with background refresh.
   e.respondWith(
     caches.match(e.request).then((hit) => {
       const net = fetch(e.request).then((res) => {

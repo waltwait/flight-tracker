@@ -27,6 +27,32 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/flight-tracker/sw.js', {scope: '/flight-tracker/'});
   });
 }
+/* one-tap install button: shown only when the browser actually offers install */
+let deferredInstallPrompt = null;
+function wireInstallBtn() {
+  document.querySelectorAll('.install-btn').forEach(function(b) {
+    b.addEventListener('click', function() {
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        deferredInstallPrompt = null;
+      }
+    });
+  });
+}
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  document.querySelectorAll('.install-btn').forEach(function(b) { b.hidden = false; });
+});
+window.addEventListener('appinstalled', function() {
+  deferredInstallPrompt = null;
+  document.querySelectorAll('.install-btn').forEach(function(b) { b.hidden = true; });
+});
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', wireInstallBtn);
+} else {
+  wireInstallBtn();
+}
 </script>"""
 
 BASE_CSS = """
@@ -53,6 +79,10 @@ backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
 .nav a.brand .stamp-sm{display:inline-block;color:var(--red);border:2px solid var(--red);
 border-radius:4px;font-size:12px;padding:0 6px;margin-right:8px;transform:rotate(-4deg);font-family:var(--f-display)}
 .nav .crumb{color:var(--ink3);font-size:13px}
+.install-btn{margin-left:auto;background:rgba(179,48,31,.06);border:2px solid var(--red);color:var(--red);
+border-radius:4px;font-family:var(--f-body);font-weight:700;font-size:13.5px;padding:7px 14px;cursor:pointer;white-space:nowrap}
+.install-btn[hidden]{display:none}
+.install-btn:active{transform:scale(.96)}
 /* hero */
 .hero{padding:34px 0 10px;text-align:center}
 .stamp{display:inline-block;color:var(--red);border:4px double var(--red);border-radius:8px;
@@ -282,6 +312,7 @@ def dest_page(d):
 </div>
 <a class="brand" href="../"><span class="stamp-sm">TRACK</span>機票追蹤手帳</a>
 <span class="crumb">/ {d['name']}</span>
+<button class="install-btn" hidden>安裝 App</button>
 </div></nav>
 <div class="wrap">
 <div class="hero">
@@ -412,6 +443,7 @@ position:relative;overflow:hidden;margin:26px 0 8px;box-shadow:0 2px 6px rgba(0,
 <body>
 <nav class="nav"><div class="wrap">
 <a class="brand" href="./"><span class="stamp-sm">TRACK</span>機票追蹤手帳</a>
+<button class="install-btn" hidden>安裝 App</button>
 </div></nav>
 <div class="wrap">
 <div class="cover"><h1>機票追蹤手帳</h1><p>FLIGHT PRICE JOURNAL・每日比價・漲跌全紀錄</p></div>
@@ -425,6 +457,58 @@ position:relative;overflow:hidden;margin:26px 0 8px;box-shadow:0 2px 6px rgba(0,
 </div>
 </body>
 </html>"""
+
+
+SW_TEMPLATE = """/* flight-tracker service worker (generated {stamp}) */
+const CACHE = 'flight-tracker-{stamp}';
+const ASSETS = [
+  '/flight-tracker/',
+  '/flight-tracker/tokyo/',
+  '/flight-tracker/manifest.json',
+  '/flight-tracker/icons/icon-192.png',
+  '/flight-tracker/icons/icon-512.png',
+];
+
+self.addEventListener('install', (e) => {{
+  e.waitUntil(
+    caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting())
+  );
+}});
+
+self.addEventListener('activate', (e) => {{
+  e.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))
+    ).then(() => self.clients.claim())
+  );
+}});
+
+self.addEventListener('fetch', (e) => {{
+  if (e.request.method !== 'GET') return;
+  // Page navigations: network-first so the installed app always opens fresh prices.
+  if (e.request.mode === 'navigate' || e.request.destination === 'document') {{
+    e.respondWith(
+      fetch(e.request).then((res) => {{
+        const copy = res.clone();
+        caches.open(CACHE).then((c) => c.put(e.request, copy));
+        return res;
+      }}).catch(() => caches.match(e.request))
+    );
+    return;
+  }}
+  // Static assets: cache-first with background refresh.
+  e.respondWith(
+    caches.match(e.request).then((hit) => {{
+      const net = fetch(e.request).then((res) => {{
+        const copy = res.clone();
+        caches.open(CACHE).then((c) => c.put(e.request, copy));
+        return res;
+      }}).catch(() => hit);
+      return hit || net;
+    }})
+  );
+}});
+"""
 
 
 def main():
@@ -443,6 +527,10 @@ def main():
         hub = hub_page(dests)
         f.write(hub)
     print(f"wrote index.html ({len(hub)} bytes)")
+    stamp = datetime.now().strftime("%Y%m%d")
+    with open(os.path.join(HERE, "sw.js"), "w") as f:
+        f.write(SW_TEMPLATE.format(stamp=stamp))
+    print(f"wrote sw.js (cache {stamp})")
 
 
 if __name__ == "__main__":
