@@ -89,16 +89,19 @@ th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--rule2)}
 th{font-size:12.5px;color:var(--ink2);background:rgba(220,207,184,.25);font-family:var(--f-mono)}
 td.num{font-family:var(--f-mono)}
 .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
-/* tabs: notebook index style */
-.tabs{display:flex;gap:2px;padding:12px 0 0;border-bottom:1px solid var(--rule)}
-.tab{
-  font-family:var(--f-display);font-size:16.5px;font-weight:700;
-  background:none;border:none;cursor:pointer;
-  padding:10px 20px 11px;margin-bottom:-1px;
-  color:var(--ink3);border-bottom:3px solid transparent;
-  min-height:44px;
-}
-.tab.active{color:var(--ink);border-bottom-color:var(--red)}
+/* nav dropdown menu */
+.navmenu{position:relative}
+.dots{background:none;border:none;font-size:20px;color:var(--ink2);cursor:pointer;
+padding:6px 8px;min-width:44px;min-height:44px;line-height:1}
+.dots:active{color:var(--red)}
+.dropdown{position:absolute;top:calc(100% + 4px);left:0;background:var(--surface);
+border:1px solid var(--rule);border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.14);
+min-width:160px;display:none;z-index:30;overflow:hidden}
+.dropdown.open{display:block;animation:fadein .15s}
+.dropdown button{display:block;width:100%;text-align:left;background:none;border:none;
+font-family:var(--f-body);font-size:15.5px;color:var(--ink);padding:13px 18px;cursor:pointer;min-height:44px}
+.dropdown button.active{color:var(--red);font-weight:700}
+.dropdown button + button{border-top:1px solid var(--rule2)}
 .tabpane{display:none}
 .tabpane.active{display:block;animation:fadein .25s}
 @keyframes fadein{from{opacity:0}to{opacity:1}}
