@@ -216,11 +216,6 @@ def ticket_card(combo_key, v, delta, pct, link, tape_color, badge_html, rows_htm
 
 def dest_page(d, dests):
     watch, history = load_dest(d)
-    drawer_dests = "".join(
-        f"<a class=\"row{' active' if x['id'] == d['id'] else ''}\""
-        f" href=\"../{x['id']}/\">{x['name']}<span class=\"arr\">→</span></a>"
-        for x in dests
-    )
     fx = watch.get("fx_usd_twd", 0)
     checked = watch.get("checked_at", "")
     try:
@@ -328,9 +323,6 @@ def dest_page(d, dests):
 <h4>檢視 VIEW</h4>
 <button class="row active" data-tab="prices">今日比價</button>
 <button class="row" data-tab="trend">走勢分析</button>
-<h4>目的地 DESTINATIONS</h4>
-<a class="row" href="../">首頁<span class="arr">→</span></a>
-{drawer_dests}
 </aside>
 <div class="wrap">
 <div class="hero">
@@ -431,11 +423,6 @@ drawer.querySelectorAll('[data-tab]').forEach(function(btn) {{
 
 def hub_page(dests):
     cards = []
-    hub_drawer_dests = "".join(
-        f"<a class=\"row\" href=\"./{d['id']}/\">{d['name']}"
-        f"<span class=\"arr\">→</span></a>"
-        for d in dests
-    )
     for d in dests:
         watch, history = load_dest(d)
         ck, cv = min(watch["baselines"].items(), key=lambda kv: kv[1]["twd"])
@@ -468,17 +455,9 @@ position:relative;overflow:hidden;margin:26px 0 8px;box-shadow:0 2px 6px rgba(0,
 </head>
 <body>
 <nav class="nav"><div class="wrap">
-<button class="drawer-btn" id="drawerBtn" aria-label="選單">☰</button>
 <a class="brand" href="./"><span class="stamp-sm">TRACK</span>機票追蹤手帳</a>
 <button class="install-btn" hidden>安裝 App</button>
 </div></nav>
-<div class="scrim" id="scrim"></div>
-<aside class="drawer" id="drawer">
-<div class="d-head"><span class="d-brand">機票追蹤手帳</span>
-<button class="d-close" id="drawerClose" aria-label="關閉">✕</button></div>
-<h4>目的地 DESTINATIONS</h4>
-{hub_drawer_dests}
-</aside>
 <div class="wrap">
 <div class="cover"><h1>機票追蹤手帳</h1><p>FLIGHT PRICE JOURNAL・每日比價・漲跌全紀錄</p></div>
 
@@ -489,20 +468,6 @@ position:relative;overflow:hidden;margin:26px 0 8px;box-shadow:0 2px 6px rgba(0,
 
 <div class="foot">每天自動更新・價格為瀏覽器實際查詢的選定航班總價（NT$）・僅供參考</div>
 </div>
-<script>
-const drawer = document.getElementById('drawer');
-const scrim = document.getElementById('scrim');
-function closeDrawer() {{
-  drawer.classList.remove('open');
-  scrim.classList.remove('open');
-}}
-document.getElementById('drawerBtn').addEventListener('click', function() {{
-  drawer.classList.add('open');
-  scrim.classList.add('open');
-}});
-document.getElementById('drawerClose').addEventListener('click', closeDrawer);
-scrim.addEventListener('click', closeDrawer);
-</script>
 </body>
 </html>"""
 
