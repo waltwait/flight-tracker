@@ -133,19 +133,27 @@ th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--rule2)}
 th{font-size:12.5px;color:var(--ink2);background:rgba(220,207,184,.25);font-family:var(--f-mono)}
 td.num{font-family:var(--f-mono)}
 .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
-/* nav dropdown menu */
-.navmenu{position:relative}
-.dots{background:none;border:none;font-size:20px;color:var(--ink2);cursor:pointer;
-padding:6px 8px;min-width:44px;min-height:44px;line-height:1}
-.dots:active{color:var(--red)}
-.dropdown{position:absolute;top:calc(100% + 4px);left:0;background:var(--surface);
-border:1px solid var(--rule);border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.14);
-min-width:160px;display:none;z-index:30;overflow:hidden}
-.dropdown.open{display:block;animation:fadein .15s}
-.dropdown button{display:block;width:100%;text-align:left;background:none;border:none;
-font-family:var(--f-body);font-size:15.5px;color:var(--ink);padding:13px 18px;cursor:pointer;min-height:44px}
-.dropdown button.active{color:var(--red);font-weight:700}
-.dropdown button + button{border-top:1px solid var(--rule2)}
+/* nav drawer menu */
+.drawer-btn{background:none;border:none;font-size:21px;color:var(--ink);cursor:pointer;
+padding:6px 10px;min-width:44px;min-height:44px;line-height:1}
+.drawer-btn:active{color:var(--red)}
+.scrim{position:fixed;inset:0;background:rgba(30,20,10,.45);z-index:40;display:none}
+.scrim.open{display:block}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:272px;max-width:82vw;background:var(--surface);
+z-index:50;transform:translateX(-106%);transition:transform .25s ease;
+box-shadow:4px 0 18px rgba(0,0,0,.18);padding:20px 18px 28px;overflow-y:auto}
+.drawer.open{transform:none}
+.drawer .d-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.drawer .d-brand{font-family:var(--f-display);font-weight:900;font-size:16px}
+.drawer .d-close{background:none;border:none;font-size:20px;color:var(--ink3);cursor:pointer;
+min-width:44px;min-height:44px}
+.drawer h4{font-family:var(--f-mono);font-size:11.5px;letter-spacing:2px;color:var(--ink3);
+margin:20px 0 4px}
+.drawer .row{display:flex;align-items:center;width:100%;text-align:left;background:none;border:none;
+font-family:var(--f-body);font-size:16px;color:var(--ink);padding:13px 8px;cursor:pointer;
+text-decoration:none;border-bottom:1px solid var(--rule2);min-height:44px}
+.drawer .row.active{color:var(--red);font-weight:700}
+.drawer .row .arr{margin-left:auto;color:var(--ink3)}
 .tabpane{display:none}
 .tabpane.active{display:block;animation:fadein .25s}
 @keyframes fadein{from{opacity:0}to{opacity:1}}
@@ -206,8 +214,13 @@ def ticket_card(combo_key, v, delta, pct, link, tape_color, badge_html, rows_htm
 </div>"""
 
 
-def dest_page(d):
+def dest_page(d, dests):
     watch, history = load_dest(d)
+    drawer_dests = "".join(
+        f"<a class=\"row{' active' if x['id'] == d['id'] else ''}\""
+        f" href=\"../{x['id']}/\">{x['name']}<span class=\"arr\">→</span></a>"
+        for x in dests
+    )
     fx = watch.get("fx_usd_twd", 0)
     checked = watch.get("checked_at", "")
     try:
@@ -303,17 +316,22 @@ def dest_page(d):
 </head>
 <body>
 <nav class="nav"><div class="wrap">
-<div class="navmenu">
-<button class="dots" id="menuBtn" aria-label="切換檢視">⋮</button>
-<div class="dropdown" id="menuDrop">
-<button data-tab="prices" class="active">今日比價</button>
-<button data-tab="trend">走勢分析</button>
-</div>
-</div>
+<button class="drawer-btn" id="drawerBtn" aria-label="選單">☰</button>
 <a class="brand" href="../"><span class="stamp-sm">TRACK</span>機票追蹤手帳</a>
 <span class="crumb">/ {d['name']}</span>
 <button class="install-btn" hidden>安裝 App</button>
 </div></nav>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer">
+<div class="d-head"><span class="d-brand">機票追蹤手帳</span>
+<button class="d-close" id="drawerClose" aria-label="關閉">✕</button></div>
+<h4>檢視 VIEW</h4>
+<button class="row active" data-tab="prices">今日比價</button>
+<button class="row" data-tab="trend">走勢分析</button>
+<h4>目的地 DESTINATIONS</h4>
+<a class="row" href="../">首頁<span class="arr">→</span></a>
+{drawer_dests}
+</aside>
 <div class="wrap">
 <div class="hero">
 <div class="stamp">{d['code']}</div>
@@ -381,25 +399,28 @@ trendChart = new Chart(document.getElementById('trend'), {{
   }}
 }});
 }}
-const menuBtn = document.getElementById('menuBtn');
-const menuDrop = document.getElementById('menuDrop');
-menuBtn.addEventListener('click', function(e) {{
-  e.stopPropagation();
-  menuDrop.classList.toggle('open');
+const drawer = document.getElementById('drawer');
+const scrim = document.getElementById('scrim');
+function closeDrawer() {{
+  drawer.classList.remove('open');
+  scrim.classList.remove('open');
+}}
+document.getElementById('drawerBtn').addEventListener('click', function() {{
+  drawer.classList.add('open');
+  scrim.classList.add('open');
 }});
-document.addEventListener('click', function() {{
-  menuDrop.classList.remove('open');
-}});
-menuDrop.querySelectorAll('button').forEach(function(btn) {{
+document.getElementById('drawerClose').addEventListener('click', closeDrawer);
+scrim.addEventListener('click', closeDrawer);
+drawer.querySelectorAll('[data-tab]').forEach(function(btn) {{
   btn.addEventListener('click', function() {{
-    menuDrop.querySelectorAll('button').forEach(function(b) {{ b.classList.remove('active'); }});
+    drawer.querySelectorAll('[data-tab]').forEach(function(b) {{ b.classList.remove('active'); }});
     document.querySelectorAll('.tabpane').forEach(function(p) {{ p.classList.remove('active'); }});
     btn.classList.add('active');
     document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
     if (btn.dataset.tab === 'trend') {{
       if (!trendChart) initTrend(); else trendChart.resize();
     }}
-    menuDrop.classList.remove('open');
+    closeDrawer();
     window.scrollTo({{top: 0, behavior: 'smooth'}});
   }});
 }});
@@ -410,6 +431,11 @@ menuDrop.querySelectorAll('button').forEach(function(btn) {{
 
 def hub_page(dests):
     cards = []
+    hub_drawer_dests = "".join(
+        f"<a class=\"row\" href=\"./{d['id']}/\">{d['name']}"
+        f"<span class=\"arr\">→</span></a>"
+        for d in dests
+    )
     for d in dests:
         watch, history = load_dest(d)
         ck, cv = min(watch["baselines"].items(), key=lambda kv: kv[1]["twd"])
@@ -442,9 +468,17 @@ position:relative;overflow:hidden;margin:26px 0 8px;box-shadow:0 2px 6px rgba(0,
 </head>
 <body>
 <nav class="nav"><div class="wrap">
+<button class="drawer-btn" id="drawerBtn" aria-label="選單">☰</button>
 <a class="brand" href="./"><span class="stamp-sm">TRACK</span>機票追蹤手帳</a>
 <button class="install-btn" hidden>安裝 App</button>
 </div></nav>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer">
+<div class="d-head"><span class="d-brand">機票追蹤手帳</span>
+<button class="d-close" id="drawerClose" aria-label="關閉">✕</button></div>
+<h4>目的地 DESTINATIONS</h4>
+{hub_drawer_dests}
+</aside>
 <div class="wrap">
 <div class="cover"><h1>機票追蹤手帳</h1><p>FLIGHT PRICE JOURNAL・每日比價・漲跌全紀錄</p></div>
 
@@ -455,6 +489,20 @@ position:relative;overflow:hidden;margin:26px 0 8px;box-shadow:0 2px 6px rgba(0,
 
 <div class="foot">每天自動更新・價格為瀏覽器實際查詢的選定航班總價（NT$）・僅供參考</div>
 </div>
+<script>
+const drawer = document.getElementById('drawer');
+const scrim = document.getElementById('scrim');
+function closeDrawer() {{
+  drawer.classList.remove('open');
+  scrim.classList.remove('open');
+}}
+document.getElementById('drawerBtn').addEventListener('click', function() {{
+  drawer.classList.add('open');
+  scrim.classList.add('open');
+}});
+document.getElementById('drawerClose').addEventListener('click', closeDrawer);
+scrim.addEventListener('click', closeDrawer);
+</script>
 </body>
 </html>"""
 
@@ -519,7 +567,7 @@ def main():
         d["history"] = os.path.expanduser(d["history"])
         outdir = os.path.join(HERE, d["id"])
         os.makedirs(outdir, exist_ok=True)
-        html = dest_page(d)
+        html = dest_page(d, dests)
         with open(os.path.join(outdir, "index.html"), "w") as f:
             f.write(html)
         print(f"wrote {d['id']}/index.html ({len(html)} bytes)")
