@@ -45,16 +45,21 @@ if (document.readyState === 'loading') {
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
---bg:#F3ECDC;--surface:#FBF7EC;--ink:#3B2F25;--ink2:#66564A;--ink3:#8F7E6B;
---rule:#DCCFB8;--rule2:#E9E0CD;--red:#B3301F;--blue:#2B4A86;--now:#F2DC5D;
---kraft:#B98F63;
+--bg:#F3ECDC;--surface:#FBF7EC;--kraft:#B98F63;
+--ink:#3B2F25;--ink2:#66564A;--ink3:#8F7E6B;
+--rule:#DCCFB8;--rule2:#E9E0CD;--dot:rgba(59,47,37,.14);
+--red:#B3301F;--red-soft:#F1DDD2;
+--blue:#2B4A86;--blue-soft:#E0E2E8;
+--green:#2F6B4F;--plum:#6E3B6E;
+--now:#F2DC5D;--now-ink:#4A3A00;
+--tape-clip:polygon(0 4%,4% 0,96% 3%,100% 0,97% 26%,100% 50%,97% 74%,100% 100%,95% 97%,4% 100%,0 96%,3% 72%,0 50%,3% 26%);
 --f-display:'Young Serif','Noto Serif TC',serif;
 --f-body:'LXGW WenKai TC','Kaiti TC','PingFang TC','Microsoft JhengHei',serif;
 --f-mono:'Courier Prime',monospace;
 }
 body{font-family:var(--f-body);color:var(--ink);line-height:1.65;font-size:15.5px;
 background-color:var(--bg);
-background-image:radial-gradient(#e2d5b8 1.1px,transparent 1.1px);
+background-image:radial-gradient(var(--dot) 1.1px,transparent 1.1px);
 background-size:22px 22px;padding:0 0 48px;-webkit-text-size-adjust:100%}
 .wrap{max-width:760px;margin:0 auto;padding:0 16px}
 @media(min-width:640px){.wrap{padding:0 28px}}
@@ -88,7 +93,7 @@ padding:0 4px;font-weight:700}
 .ticket{position:relative;background:var(--surface);border:1px solid var(--rule);
 border-radius:4px;margin-bottom:18px;box-shadow:0 1px 0 var(--rule)}
 .tape{position:absolute;top:-11px;left:28px;width:92px;height:24px;opacity:.85;transform:rotate(-3deg);
-clip-path:polygon(2% 8%,7% 0,14% 10%,21% 2%,30% 9%,38% 1%,47% 10%,55% 3%,63% 9%,71% 2%,80% 10%,88% 3%,95% 9%,100% 4%,98% 90%,93% 100%,85% 92%,76% 99%,67% 93%,58% 100%,49% 94%,40% 99%,31% 93%,22% 100%,13% 94%,6% 99%,0 92%)}
+clip-path:var(--tape-clip)}
 .ticket:nth-child(even) .tape{left:auto;right:28px;transform:rotate(3deg)}
 .t-in{padding:16px 16px 12px}
 .t-route{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
@@ -96,19 +101,19 @@ clip-path:polygon(2% 8%,7% 0,14% 10%,21% 2%,30% 9%,38% 1%,47% 10%,55% 3%,63% 9%,
 .t-id{font-family:var(--f-mono);font-size:12px;color:var(--ink3)}
 .t-price{font-family:var(--f-mono);font-weight:700;font-size:30px;margin:6px 0 2px}
 .t-delta{font-size:13px;margin-bottom:8px}
-.down{color:#2e7d46}.up{color:var(--red)}
+.down{color:var(--green)}.up{color:var(--red)}
 .t-meta{font-size:13.5px;color:var(--ink2)}
 .t-meta div{margin:2px 0}
 .t-meta .k{display:inline-block;min-width:70px;color:var(--ink3);font-size:12.5px}
 .t-perf{border-top:2px dashed var(--rule);margin:10px 0 0;position:relative}
 .t-foot{display:flex;justify-content:space-between;align-items:center;padding:10px 16px 12px}
 .src{font-family:var(--f-mono);font-size:12px;color:var(--ink3)}
-.btn{display:inline-block;background:#E0E2E8;color:var(--blue);font-weight:700;font-size:14px;
+.btn{display:inline-block;background:var(--blue-soft);color:var(--blue);font-weight:700;font-size:14px;
 border-radius:999px;padding:9px 26px;text-decoration:none;min-height:44px;line-height:26px}
-.btn:hover{background:#d3d7e0}
+.btn:hover{filter:brightness(.96)}
 .badge{display:inline-block;font-size:11.5px;border:1.5px solid var(--red);color:var(--red);
-border-radius:3px;padding:0 7px;margin-left:8px;transform:rotate(-3deg);font-weight:700;background:rgba(179,48,31,.06)}
-.badge.ok{border-color:#2e7d46;color:#2e7d46;transform:rotate(2deg);background:rgba(46,125,70,.06)}
+border-radius:3px;padding:0 7px;margin-left:8px;transform:rotate(-3deg);font-weight:700;background:var(--red-soft)}
+.badge.ok{border-color:var(--green);color:var(--green);transform:rotate(2deg);background:rgba(47,107,79,.08)}
 /* chart */
 .chart-card{background:var(--surface);border:1px solid var(--rule);border-radius:4px;padding:16px 12px 8px;position:relative}
 .chart-wrap{position:relative;height:290px}
@@ -155,11 +160,18 @@ padding:18px;margin-bottom:18px;text-decoration:none;color:var(--ink);position:r
 .soon{border:1.5px dashed var(--rule);border-radius:4px;padding:18px;text-align:center;color:var(--ink3);font-size:14px}
 .foot{margin-top:36px;font-size:12.5px;color:var(--ink3);border-top:1px solid var(--rule);padding-top:12px}
 @media(prefers-color-scheme:dark){
-:root{--bg:#231D17;--surface:#2E2620;--ink:#EDE4D3;--ink2:#C4B49E;--ink3:#9A8874;
---rule:#4A3E32;--rule2:#3A3129;--red:#EE8672;--blue:#A2B9EA;--now:#8a7a2e}
-body{background-image:radial-gradient(#3a3129 1.1px,transparent 1.1px)}
+:root{--bg:#231D17;--surface:#2D261F;--kraft:#120E0B;
+--ink:#EDE3CF;--ink2:#BDAF99;--ink3:#8C7E6A;
+--rule:#43392E;--rule2:#352C24;--dot:rgba(237,227,207,.08);
+--red:#EE8672;--red-soft:#45261F;
+--blue:#A2B9EA;--blue-soft:#2A2F40;
+--green:#86C3A2;--plum:#D29BD0;
+--now:#6A5812;--now-ink:#FBE58A;color-scheme:dark}
+body{background-image:radial-gradient(var(--dot) 1.1px,transparent 1.1px)}
 .nav{background:rgba(35,29,23,.88)}
-.btn{background:#3A4358;color:#A2B9EA}.btn:hover{background:#444e68}
+.btn{background:var(--blue-soft);color:var(--blue)}.btn:hover{filter:brightness(1.12)}
+.badge.ok{background:rgba(134,195,162,.1)}
+.hl{color:var(--now-ink)}
 }
 </style>
 </head>
@@ -310,13 +322,13 @@ body{background-image:radial-gradient(#3a3129 1.1px,transparent 1.1px)}
 
 <div class="sec"><div class="sec-h"><h2>漲跌分析</h2><span class="en">ANALYSIS</span></div>
 <table><tr><th>組合</th><th>今日</th><th>歷史低點</th><th>期間走勢</th></tr>
-<tr><td><span class='dot' style='background:#2B4A86'></span>A</td><td class='num'>NT$ 17,711</td><td class='num'>NT$ 16,416（10/07）</td><td class='up'>上漲 +7.9%</td></tr><tr><td><span class='dot' style='background:#B3301F'></span>B</td><td class='num'>NT$ 15,612</td><td class='num'>NT$ 14,344（10/12）</td><td class='down'>下跌 -4.3%</td></tr><tr><td><span class='dot' style='background:#2e7d46'></span>C</td><td class='num'>NT$ 16,863</td><td class='num'>NT$ 16,154（10/09）</td><td class=''>持平 -0.4%</td></tr><tr><td><span class='dot' style='background:#B98F63'></span>D</td><td class='num'>NT$ 14,774</td><td class='num'>NT$ 14,664（10/09）</td><td class='down'>下跌 -1.2%</td></tr></table></div>
+<tr><td><span class='dot' style='background:#2B4A86'></span>A</td><td class='num'>NT$ 17,711</td><td class='num'>NT$ 16,416（10/07）</td><td class='up'>上漲 +7.9%</td></tr><tr><td><span class='dot' style='background:#B3301F'></span>B</td><td class='num'>NT$ 15,612</td><td class='num'>NT$ 14,344（10/12）</td><td class='down'>下跌 -4.3%</td></tr><tr><td><span class='dot' style='background:#2F6B4F'></span>C</td><td class='num'>NT$ 16,863</td><td class='num'>NT$ 16,154（10/09）</td><td class=''>持平 -0.4%</td></tr><tr><td><span class='dot' style='background:#B98F63'></span>D</td><td class='num'>NT$ 14,774</td><td class='num'>NT$ 14,664（10/09）</td><td class='down'>下跌 -1.2%</td></tr></table></div>
 </div>
 
 <div class="foot">資料來源：Google Flights、Skyscanner 台灣（瀏覽器實際查詢）・價格為選定去回程後的實際總價・僅供參考，實際以訂票頁面為準・每日自動更新</div>
 </div>
 <script>
-const chartData = {"labels": ["10/07", "10/08", "10/09", "10/10", "10/11", "10/12", "10/13", "10/14", "10/15", "10/16"], "datasets": [{"label": "A 2/25 → 3/2", "data": [16416, 16832, 16729, 16859, 17421, 17336, 17541, 17227, 17456, 17711], "borderColor": "#2B4A86", "backgroundColor": "#2B4A86", "tension": 0.25, "pointRadius": 3}, {"label": "B 2/25 → 3/3", "data": [16306, 15712, 18010, 20754, 15604, 14344, 15611, 15884, 15485, 15612], "borderColor": "#B3301F", "backgroundColor": "#B3301F", "tension": 0.25, "pointRadius": 3}, {"label": "C 2/26 → 3/2", "data": [16936, 16511, 16154, 16894, 16866, 16786, 17012, 17061, 16745, 16863], "borderColor": "#2e7d46", "backgroundColor": "#2e7d46", "tension": 0.25, "pointRadius": 3}, {"label": "D 2/26 → 3/3", "data": [14947, 14887, 14664, 14804, 16960, 14781, 14930, 14787, 14668, 14774], "borderColor": "#B98F63", "backgroundColor": "#B98F63", "tension": 0.25, "pointRadius": 3}]};
+const chartData = {"labels": ["10/07", "10/08", "10/09", "10/10", "10/11", "10/12", "10/13", "10/14", "10/15", "10/16"], "datasets": [{"label": "A 2/25 → 3/2", "data": [16416, 16832, 16729, 16859, 17421, 17336, 17541, 17227, 17456, 17711], "borderColor": "#2B4A86", "backgroundColor": "#2B4A86", "tension": 0.25, "pointRadius": 3}, {"label": "B 2/25 → 3/3", "data": [16306, 15712, 18010, 20754, 15604, 14344, 15611, 15884, 15485, 15612], "borderColor": "#B3301F", "backgroundColor": "#B3301F", "tension": 0.25, "pointRadius": 3}, {"label": "C 2/26 → 3/2", "data": [16936, 16511, 16154, 16894, 16866, 16786, 17012, 17061, 16745, 16863], "borderColor": "#2F6B4F", "backgroundColor": "#2F6B4F", "tension": 0.25, "pointRadius": 3}, {"label": "D 2/26 → 3/3", "data": [14947, 14887, 14664, 14804, 16960, 14781, 14930, 14787, 14668, 14774], "borderColor": "#B98F63", "backgroundColor": "#B98F63", "tension": 0.25, "pointRadius": 3}]};
 const airlines = {"2026-10-07": {"A": "中華航空", "B": "台灣虎航", "C": "樂桃航空", "D": "樂桃航空"}, "2026-10-08": {"A": "中華航空", "B": "樂桃航空", "C": "樂桃航空", "D": "樂桃航空"}, "2026-10-09": {"A": "中華航空", "B": "星宇航空", "C": "樂桃航空", "D": "樂桃航空"}, "2026-10-10": {"A": "中華航空", "B": "日本航空", "C": "樂桃航空", "D": "樂桃航空"}, "2026-10-11": {"A": "中華航空", "B": "樂桃航空", "C": "樂桃航空", "D": "中華航空"}, "2026-10-12": {"A": "中華航空", "B": "捷星航空", "C": "樂桃航空", "D": "樂桃航空"}, "2026-10-13": {"A": "中華航空", "B": "樂桃航空", "C": "樂桃航空", "D": "樂桃航空"}, "2026-10-14": {"A": "China Airlines", "B": "Tigerair Taiwan", "C": "Peach Aviation", "D": "Peach Aviation"}, "2026-10-15": {"A": "中華航空", "B": "樂桃航空", "C": "樂桃航空", "D": "樂桃航空"}, "2026-10-16": {"A": "樂桃航空", "B": "樂桃航空", "C": "樂桃航空", "D": "樂桃航空"}};
 const dates = ["2026-10-07", "2026-10-08", "2026-10-09", "2026-10-10", "2026-10-11", "2026-10-12", "2026-10-13", "2026-10-14", "2026-10-15", "2026-10-16"];
 let trendChart = null;

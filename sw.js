@@ -1,5 +1,5 @@
-/* flight-tracker service worker (generated 20261015) */
-const CACHE = 'flight-tracker-20261015';
+/* flight-tracker service worker (generated 20261016) */
+const CACHE = 'flight-tracker-20261016';
 const ASSETS = [
   '/flight-tracker/',
   '/flight-tracker/tokyo/',
