@@ -141,7 +141,7 @@ td.num{font-family:var(--f-mono)}
 .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
 /* nav drawer menu */
 .drawer-btn{background:none;border:none;font-size:21px;color:var(--ink);cursor:pointer;
-padding:6px 10px;min-width:44px;min-height:44px;line-height:1}
+padding:6px 10px;min-width:44px;min-height:44px;line-height:1;margin-left:-12px}
 .drawer-btn:active{color:var(--red)}
 .scrim{position:fixed;inset:0;background:rgba(30,20,10,.45);z-index:40;display:none}
 .scrim.open{display:block}
