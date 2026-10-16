@@ -65,6 +65,7 @@ BASE_CSS = """
 --blue:#2B4A86;--blue-soft:#E0E2E8;
 --green:#2F6B4F;--plum:#6E3B6E;
 --now:#F2DC5D;--now-ink:#4A3A00;
+--cover-ink:#2b2119;
 --tape-clip:polygon(0 4%,4% 0,96% 3%,100% 0,97% 26%,100% 50%,97% 74%,100% 100%,95% 97%,4% 100%,0 96%,3% 72%,0 50%,3% 26%);
 --f-display:'Young Serif','Noto Serif TC',serif;
 --f-body:'LXGW WenKai TC','Kaiti TC','PingFang TC','Microsoft JhengHei',serif;
@@ -179,7 +180,8 @@ padding:18px;margin-bottom:18px;text-decoration:none;color:var(--ink);position:r
 --red:#EE8672;--red-soft:#45261F;
 --blue:#A2B9EA;--blue-soft:#2A2F40;
 --green:#86C3A2;--plum:#D29BD0;
---now:#6A5812;--now-ink:#FBE58A;color-scheme:dark}
+--now:#6A5812;--now-ink:#FBE58A;
+--cover-ink:#EDE3CF;color-scheme:dark}
 body{background-image:radial-gradient(var(--dot) 1.1px,transparent 1.1px)}
 .nav{background:rgba(35,29,23,.88)}
 .btn{background:var(--blue-soft);color:var(--blue)}.btn:hover{filter:brightness(1.12)}
@@ -458,7 +460,7 @@ def hub_page(dests):
 <link rel="stylesheet" href="{FONTS}">
 {PWA_HEAD}
 <style>{BASE_CSS}
-.cover{{background:var(--kraft);border-radius:8px;padding:34px 24px;text-align:center;color:#2b2119;
+.cover{{background:var(--kraft);border-radius:8px;padding:34px 24px;text-align:center;color:var(--cover-ink);
 position:relative;overflow:hidden;margin:26px 0 8px;box-shadow:0 2px 6px rgba(0,0,0,.15)}}
 .cover::after{{content:'';position:absolute;top:0;bottom:0;right:34px;width:14px;background:#1c1c1e;opacity:.85}}
 .cover h1{{font-family:var(--f-display);font-weight:900;font-size:clamp(30px,8vw,44px);letter-spacing:6px}}
