@@ -190,10 +190,11 @@ body{background-image:radial-gradient(var(--dot) 1.1px,transparent 1.1px)}
 }
 """
 
-COMBO_SHORT = {"20270225_20270302": "A", "20270225_20270303": "B",
-               "20270226_20270302": "C", "20270226_20270303": "D"}
-COMBO_LABELS = {"20270225_20270302": "2/25 → 3/2", "20270225_20270303": "2/25 → 3/3",
-                "20270226_20270302": "2/26 → 3/2", "20270226_20270303": "2/26 → 3/3"}
+COMBO_SHORT = {"20270225_20270302": "A",
+               "20270226_20270302": "C"}
+COMBO_LABELS = {"20270225_20270302": "2/25 → 3/2",
+                "20270226_20270302": "2/26 → 3/2"}
+ACTIVE_SHORTS = ["A", "C"]
 SERIES_COLORS = {"A": "#2B4A86", "B": "#B3301F", "C": "#2F6B4F", "D": "#B98F63"}
 TAPE_COLORS = ["rgba(224,178,74,.62)", "rgba(219,154,149,.62)",
                "rgba(157,181,146,.62)", "rgba(162,185,234,.55)"]
@@ -256,7 +257,7 @@ def dest_page(d, dests):
         focus_html = "；".join(focus_items) + "。"
     else:
         ck, cv = min(watch["baselines"].items(), key=lambda kv: kv[1]["twd"])
-        focus_html = (f"今日四組含行李最低價整體持平，無值得注意的降價。"
+        focus_html = (f"今日兩組含行李最低價整體持平，無值得注意的降價。"
                       f"目前最低為 <span class='hl'>{COMBO_LABELS[ck]} {cv['airline']} NT$ {fmt(cv['twd'])}</span>。")
 
     cards1 = []
@@ -291,11 +292,11 @@ def dest_page(d, dests):
     datasets = [{"label": f"{key} {COMBO_LABELS[[kk for kk, vv in COMBO_SHORT.items() if vv == key][0]]}",
                  "data": [h[key] for h in history],
                  "borderColor": SERIES_COLORS[key], "backgroundColor": SERIES_COLORS[key],
-                 "tension": 0.25, "pointRadius": 3} for key in ["A", "B", "C", "D"]]
+                 "tension": 0.25, "pointRadius": 3} for key in ACTIVE_SHORTS]
     airlines_map = {h["date"]: h.get("airlines", {}) for h in history}
 
     arows = []
-    for key in ["A", "B", "C", "D"]:
+    for key in ACTIVE_SHORTS:
         prices = [h[key] for h in history]
         low = min(prices)
         li = prices.index(low)
@@ -440,15 +441,14 @@ def hub_page(dests):
     for d in dests:
         watch, history = load_dest(d)
         ck, cv = min(watch["baselines"].items(), key=lambda kv: kv[1]["twd"])
-        prices_b = [h["B"] for h in history]
-        low_b = min(prices_b)
+        low_all = min(min(h[s] for s in ACTIVE_SHORTS if s in h) for h in history)
         cards.append(f"""
 <a class="dest-card" href="./{d['id']}/">
   <div class="tape" style="background:{d.get('theme_tape', 'rgba(224,178,74,.62)')}"></div>
   <h3>{d['name']}</h3>
   <div class="route">{d['route']}・{d.get('desc', '')}</div>
   <div class="best">今日最低 <b>NT$ {fmt(cv['twd'])}</b>（{COMBO_LABELS[ck]}）</div>
-  <div class="route">歷史低點 NT$ {fmt(low_b)}・追蹤 {len(history)} 天</div>
+  <div class="route">歷史低點 NT$ {fmt(low_all)}・追蹤 {len(history)} 天</div>
   <span class="go">→</span>
 </a>""")
     return f"""<!DOCTYPE html>

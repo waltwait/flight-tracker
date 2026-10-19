@@ -1,1 +1,12 @@
-[{"code":"TYO","desc":"2027/2/25–26 出發・3/2–3/3 回程","history":"~/workspace/goals/goal-2/hidden_files/travel/price-history.json","id":"tokyo","name":"東京","route":"TPE ⇄ NRT","theme_tape":"rgba(219,154,149,.62)","watch":"~/workspace/goals/goal-2/hidden_files/travel/flight-watch.json"}]
+[
+ {
+  "code": "TYO",
+  "desc": "2027/2/25–26 出發・3/2 回程",
+  "history": "~/workspace/goals/goal-2/hidden_files/travel/price-history.json",
+  "id": "tokyo",
+  "name": "東京",
+  "route": "TPE ⇄ NRT",
+  "theme_tape": "rgba(219,154,149,.62)",
+  "watch": "~/workspace/goals/goal-2/hidden_files/travel/flight-watch.json"
+ }
+]
