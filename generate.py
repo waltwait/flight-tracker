@@ -190,12 +190,11 @@ body{background-image:radial-gradient(var(--dot) 1.1px,transparent 1.1px)}
 }
 """
 
-COMBO_SHORT = {"20270225_20270302": "A",
-               "20270226_20270302": "C"}
-COMBO_LABELS = {"20270225_20270302": "2/25 → 3/2",
-                "20270226_20270302": "2/26 → 3/2"}
-ACTIVE_SHORTS = ["A", "C"]
-SERIES_COLORS = {"A": "#2B4A86", "B": "#B3301F", "C": "#2F6B4F", "D": "#B98F63"}
+COMBO_SHORT = {"return_20270302": "R"}
+COMBO_LABELS = {"return_20270302": "3/2 回程單程"}
+ACTIVE_SHORTS = ["R"]
+SERIES_COLORS = {"A": "#2B4A86", "B": "#B3301F", "C": "#2F6B4F", "D": "#B98F63",
+                 "R": "#2B4A86"}
 TAPE_COLORS = ["rgba(224,178,74,.62)", "rgba(219,154,149,.62)",
                "rgba(157,181,146,.62)", "rgba(162,185,234,.55)"]
 
@@ -210,9 +209,15 @@ def load_dest(d):
     return watch, hist["history"]
 
 
-def ticket_card(combo_key, v, delta, pct, link, tape_color, badge_html, rows_html):
-    cls = "down" if delta < 0 else ("up" if delta > 0 else "")
-    arrow = "▼" if delta < 0 else ("▲" if delta > 0 else "－")
+def ticket_card(combo_key, v, delta, pct, link, tape_color, badge_html, rows_html,
+                 first_run=False):
+    if first_run:
+        delta_html = '<div class="t-delta">新規格首日・首次記錄</div>'
+    else:
+        cls = "down" if delta < 0 else ("up" if delta > 0 else "")
+        arrow = "▼" if delta < 0 else ("▲" if delta > 0 else "－")
+        delta_html = (f'<div class="t-delta {cls}">{arrow} {fmt(abs(delta))}'
+                      f'（{pct:+.1f}%）vs 昨日</div>')
     return f"""
 <div class="ticket">
   <div class="tape" style="background:{tape_color}"></div>
@@ -220,7 +225,7 @@ def ticket_card(combo_key, v, delta, pct, link, tape_color, badge_html, rows_htm
     <div class="t-route"><span class="t-combo">{COMBO_LABELS[combo_key]}</span>
     <span class="t-id">{COMBO_SHORT[combo_key]}</span></div>
     <div class="t-price">NT$ {fmt(v['twd'])}{badge_html}</div>
-    <div class="t-delta {cls}">{arrow} {fmt(abs(delta))}（{pct:+.1f}%）vs 昨日</div>
+    {delta_html}
     {rows_html}
   </div>
   <div class="t-perf"></div>
@@ -257,8 +262,17 @@ def dest_page(d, dests):
         focus_html = "；".join(focus_items) + "。"
     else:
         ck, cv = min(watch["baselines"].items(), key=lambda kv: kv[1]["twd"])
-        focus_html = (f"今日兩組含行李最低價整體持平，無值得注意的降價。"
-                      f"目前最低為 <span class='hl'>{COMBO_LABELS[ck]} {cv['airline']} NT$ {fmt(cv['twd'])}</span>。")
+        if prev:
+            focus_html = (f"今日回程單程含行李最低價整體持平，無值得注意的降價。"
+                          f"目前最低為 <span class='hl'>{COMBO_LABELS[ck]} {cv['airline']} NT$ {fmt(cv['twd'])}</span>。")
+        else:
+            focus_html = (f"今日起改為只追蹤 3/2 回程單程（NRT → TPE），新規格首日。"
+                          f"含行李直飛最低價為 <span class='hl'>{COMBO_LABELS[ck]} {cv['airline']} NT$ {fmt(cv['twd'])}</span>。")
+
+    def flight_line(v):
+        fl = v.get("flight") or v.get("out", "")
+        ret = v.get("ret", "")
+        return f"{fl} / {ret}" if ret else fl
 
     cards1 = []
     for i, k in enumerate(COMBO_LABELS):
@@ -270,10 +284,10 @@ def dest_page(d, dests):
         if dd < 0 and (pct <= -5 or dd <= -50 * fx):
             badge = '<span class="badge">值得注意</span>'
         rows = (f"<div class='t-meta'><div><span class='k'>航空</span>{v['airline']}</div>"
-                f"<div><span class='k'>航班</span>{v.get('out', '')} / {v.get('ret', '')}</div>"
+                f"<div><span class='k'>航班</span>{flight_line(v)}</div>"
                 f"<div><span class='k'>托運行李</span>{v.get('bags', '')}</div></div>")
         cards1.append(ticket_card(k, v, dd, pct, links.get(k, {}).get("skyscanner_search", "#"),
-                                 TAPE_COLORS[i % 4], badge, rows))
+                                 TAPE_COLORS[i % 4], badge, rows, first_run=not prev.get(k)))
 
     cards2 = []
     for i, k in enumerate(COMBO_LABELS):
@@ -282,7 +296,7 @@ def dest_page(d, dests):
         total_txt = f"NT$ {fmt(total)}" if total else (v.get("true_total_note") or "無法完整計算")
         vv = {"twd": v.get("fare_twd", 0), "source": v.get("source", "")}
         rows = (f"<div class='t-meta'><div><span class='k'>組合</span>{v.get('airline', '')}</div>"
-                f"<div><span class='k'>航班</span>{v.get('out', '')} / {v.get('ret', '')}</div>"
+                f"<div><span class='k'>航班</span>{flight_line(v)}</div>"
                 f"<div><span class='k'>加購行李</span>{v.get('bag_fee_note', '')}</div>"
                 f"<div><span class='k'>真實總價</span><strong>{total_txt}</strong></div></div>")
         cards2.append(ticket_card(k, vv, 0, 0, links.get(k, {}).get("google_flights_B", "#"),
@@ -290,23 +304,28 @@ def dest_page(d, dests):
 
     labels = [h["date"][5:].replace("-", "/") for h in history]
     datasets = [{"label": f"{key} {COMBO_LABELS[[kk for kk, vv in COMBO_SHORT.items() if vv == key][0]]}",
-                 "data": [h[key] for h in history],
+                 "data": [h.get(key) for h in history],
                  "borderColor": SERIES_COLORS[key], "backgroundColor": SERIES_COLORS[key],
                  "tension": 0.25, "pointRadius": 3} for key in ACTIVE_SHORTS]
     airlines_map = {h["date"]: h.get("airlines", {}) for h in history}
 
     arows = []
     for key in ACTIVE_SHORTS:
-        prices = [h[key] for h in history]
+        prices = [h[key] for h in history if key in h]
+        if not prices:
+            arows.append(
+                f"<tr><td><span class='dot' style='background:{SERIES_COLORS[key]}'></span>{key}</td>"
+                f"<td class='num'>—</td><td class='num'>—</td><td>尚無資料</td></tr>")
+            continue
         low = min(prices)
-        li = prices.index(low)
+        low_date = next(h["date"] for h in history if h.get(key) == low)
         chg = (prices[-1] - prices[0]) / prices[0] * 100
         trend = "上漲" if chg > 1 else ("下跌" if chg < -1 else "持平")
         cls = "up" if chg > 1 else ("down" if chg < -1 else "")
         arows.append(
             f"<tr><td><span class='dot' style='background:{SERIES_COLORS[key]}'></span>{key}</td>"
             f"<td class='num'>NT$ {fmt(prices[-1])}</td>"
-            f"<td class='num'>NT$ {fmt(low)}（{history[li]['date'][5:].replace('-', '/')}）</td>"
+            f"<td class='num'>NT$ {fmt(low)}（{low_date[5:].replace('-', '/')}）</td>"
             f"<td class='{cls}'>{trend} {chg:+.1f}%</td></tr>")
 
     chart_json = json.dumps({"labels": labels, "datasets": datasets}, ensure_ascii=False)
@@ -370,7 +389,7 @@ def dest_page(d, dests):
 {''.join(arows)}</table></div>
 </div>
 
-<div class="foot">資料來源：Google Flights、Skyscanner 台灣（瀏覽器實際查詢）・價格為選定去回程後的實際總價・僅供參考，實際以訂票頁面為準・每日自動更新</div>
+<div class="foot">資料來源：Google Flights、Skyscanner 台灣（瀏覽器實際查詢）・價格為選定航班後的實際總價・僅供參考，實際以訂票頁面為準・每日自動更新</div>
 </div>
 <script>
 const chartData = {chart_json};
@@ -441,14 +460,15 @@ def hub_page(dests):
     for d in dests:
         watch, history = load_dest(d)
         ck, cv = min(watch["baselines"].items(), key=lambda kv: kv[1]["twd"])
-        low_all = min(min(h[s] for s in ACTIVE_SHORTS if s in h) for h in history)
+        all_prices = [h[s] for h in history for s in ACTIVE_SHORTS if s in h]
+        low_txt = f"歷史低點 NT$ {fmt(min(all_prices))}" if all_prices else "新規格首日・尚無歷史低點"
         cards.append(f"""
 <a class="dest-card" href="./{d['id']}/">
   <div class="tape" style="background:{d.get('theme_tape', 'rgba(224,178,74,.62)')}"></div>
   <h3>{d['name']}</h3>
   <div class="route">{d['route']}・{d.get('desc', '')}</div>
   <div class="best">今日最低 <b>NT$ {fmt(cv['twd'])}</b>（{COMBO_LABELS[ck]}）</div>
-  <div class="route">歷史低點 NT$ {fmt(low_all)}・追蹤 {len(history)} 天</div>
+  <div class="route">{low_txt}・追蹤 {len(history)} 天</div>
   <span class="go">→</span>
 </a>""")
     return f"""<!DOCTYPE html>
