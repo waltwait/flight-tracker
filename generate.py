@@ -275,6 +275,7 @@ def dest_page(d, dests):
         return f"{fl} / {ret}" if ret else fl
 
     cards1 = []
+    sk_blocked = watch.get("skyscanner_blocked", False)
     for i, k in enumerate(COMBO_LABELS):
         v = watch["baselines"][k]
         p = prev.get(k, v["twd"])
@@ -286,7 +287,9 @@ def dest_page(d, dests):
         rows = (f"<div class='t-meta'><div><span class='k'>航空</span>{v['airline']}</div>"
                 f"<div><span class='k'>航班</span>{flight_line(v)}</div>"
                 f"<div><span class='k'>托運行李</span>{v.get('bags', '')}</div></div>")
-        cards1.append(ticket_card(k, v, dd, pct, links.get(k, {}).get("skyscanner_search", "#"),
+        lk = links.get(k, {})
+        book_link = lk.get("google_flights_A", "#") if sk_blocked and lk.get("google_flights_A") else lk.get("skyscanner_search", "#")
+        cards1.append(ticket_card(k, v, dd, pct, book_link,
                                  TAPE_COLORS[i % 4], badge, rows, first_run=not prev.get(k)))
 
     cards2 = []
