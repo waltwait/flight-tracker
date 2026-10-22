@@ -288,7 +288,13 @@ def dest_page(d, dests):
                 f"<div><span class='k'>航班</span>{flight_line(v)}</div>"
                 f"<div><span class='k'>托運行李</span>{v.get('bags', '')}</div></div>")
         lk = links.get(k, {})
-        book_link = lk.get("google_flights_A", "#") if sk_blocked and lk.get("google_flights_A") else lk.get("skyscanner_search", "#")
+        src = v.get("source", "")
+        if src == "google-flights":
+            book_link = lk.get("google_flights_A", "#")
+        elif src == "skyscanner":
+            book_link = lk.get("skyscanner_search", "#")
+        else:
+            book_link = lk.get("google_flights_A") or lk.get("skyscanner_search", "#")
         cards1.append(ticket_card(k, v, dd, pct, book_link,
                                  TAPE_COLORS[i % 4], badge, rows, first_run=not prev.get(k)))
 
