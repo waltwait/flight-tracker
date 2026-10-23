@@ -263,7 +263,19 @@ def dest_page(d, dests):
     else:
         ck, cv = min(watch["baselines"].items(), key=lambda kv: kv[1]["twd"])
         if prev:
-            focus_html = (f"今日羽田→沖繩含行李最低價整體持平，無值得注意的降價。"
+            p0 = prev.get(ck)
+            if p0:
+                dd0 = cv["twd"] - p0
+                pct0 = dd0 / p0 * 100
+                if dd0 > 0:
+                    move = f"較昨日上漲 NT$ {fmt(dd0)}（{pct0:+.1f}%）。"
+                elif dd0 < 0:
+                    move = f"較昨日下跌 NT$ {fmt(-dd0)}（{pct0:.1f}%），未達值得注意門檻。"
+                else:
+                    move = "較昨日持平。"
+            else:
+                move = ""
+            focus_html = (f"今日羽田→沖繩含行李最低價{move}"
                           f"目前最低為 <span class='hl'>{COMBO_LABELS[ck]} {cv['airline']} NT$ {fmt(cv['twd'])}</span>。")
         else:
             focus_html = (f"今日起改為追蹤 3/2 羽田 → 沖繩單程（趕 20:00 前到國際通），新規格首日。"
