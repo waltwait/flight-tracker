@@ -1,11 +1,11 @@
 [
  {
-  "code": "TYO",
-  "desc": "2027/3/2 回程單程",
+  "code": "HND",
+  "desc": "2027/3/2 羽田出發・20:00 前到國際通",
   "history": "~/workspace/goals/goal-2/hidden_files/travel/price-history.json",
   "id": "tokyo",
-  "name": "東京",
-  "route": "NRT → TPE 單程",
+  "name": "沖繩",
+  "route": "HND → OKA 單程",
   "theme_tape": "rgba(219,154,149,.62)",
   "watch": "~/workspace/goals/goal-2/hidden_files/travel/flight-watch.json"
  }

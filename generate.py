@@ -190,11 +190,11 @@ body{background-image:radial-gradient(var(--dot) 1.1px,transparent 1.1px)}
 }
 """
 
-COMBO_SHORT = {"return_20270302": "R"}
-COMBO_LABELS = {"return_20270302": "3/2 回程單程"}
-ACTIVE_SHORTS = ["R"]
+COMBO_SHORT = {"hnd_oka_20270302": "H"}
+COMBO_LABELS = {"hnd_oka_20270302": "3/2 羽田 → 沖繩"}
+ACTIVE_SHORTS = ["H"]
 SERIES_COLORS = {"A": "#2B4A86", "B": "#B3301F", "C": "#2F6B4F", "D": "#B98F63",
-                 "R": "#2B4A86"}
+                 "R": "#2B4A86", "H": "#B3301F"}
 TAPE_COLORS = ["rgba(224,178,74,.62)", "rgba(219,154,149,.62)",
                "rgba(157,181,146,.62)", "rgba(162,185,234,.55)"]
 
@@ -263,10 +263,10 @@ def dest_page(d, dests):
     else:
         ck, cv = min(watch["baselines"].items(), key=lambda kv: kv[1]["twd"])
         if prev:
-            focus_html = (f"今日回程單程含行李最低價整體持平，無值得注意的降價。"
+            focus_html = (f"今日羽田→沖繩含行李最低價整體持平，無值得注意的降價。"
                           f"目前最低為 <span class='hl'>{COMBO_LABELS[ck]} {cv['airline']} NT$ {fmt(cv['twd'])}</span>。")
         else:
-            focus_html = (f"今日起改為只追蹤 3/2 回程單程（NRT → TPE），新規格首日。"
+            focus_html = (f"今日起改為追蹤 3/2 羽田 → 沖繩單程（趕 20:00 前到國際通），新規格首日。"
                           f"含行李直飛最低價為 <span class='hl'>{COMBO_LABELS[ck]} {cv['airline']} NT$ {fmt(cv['twd'])}</span>。")
 
     def flight_line(v):
