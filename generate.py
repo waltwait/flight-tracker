@@ -212,7 +212,7 @@ def load_dest(d):
 def ticket_card(combo_key, v, delta, pct, link, tape_color, badge_html, rows_html,
                  first_run=False):
     if first_run:
-        delta_html = '<div class="t-delta">新規格首日・首次記錄</div>'
+        delta_html = '<div class="t-delta">新目標首日・首次記錄</div>'
     else:
         cls = "down" if delta < 0 else ("up" if delta > 0 else "")
         arrow = "▼" if delta < 0 else ("▲" if delta > 0 else "－")
@@ -278,7 +278,7 @@ def dest_page(d, dests):
             focus_html = (f"今日羽田→沖繩含行李最低價{move}"
                           f"目前最低為 <span class='hl'>{COMBO_LABELS[ck]} {cv['airline']} NT$ {fmt(cv['twd'])}</span>。")
         else:
-            focus_html = (f"今日起改為追蹤 3/2 羽田 → 沖繩單程（趕 20:00 前到國際通），新規格首日。"
+            focus_html = (f"追蹤目標已更新，今日為新目標首日記錄。"
                           f"含行李直飛最低價為 <span class='hl'>{COMBO_LABELS[ck]} {cv['airline']} NT$ {fmt(cv['twd'])}</span>。")
 
     def flight_line(v):
